@@ -1,11 +1,122 @@
 ---
-import Welcome from '../components/Welcome.astro';
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import Section from "./components/Section.astro";
+import ButtonLink from "./components/ui/ButtonLink.astro";
+import Card from "./components/ui/Card.astro";
+import Chip from "./components/ui/Chip.astro";
+import TextWithLinks from "./components/ui/TextWithLinks.astro";
+import {
+  Category,
+  tecnologiesData,
+  workExperiencesData,
+  type WorkExperience,
+  type Tecnology,
+} from "./data";
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+const aboutDescription = `
+    Con [+5 años] de experiencia creando aplicaciones [Web] e [Híbridas], estoy preparado 
+    para dar un salto en mi carrera [Profesional] y enfocarme en mi pasión por [JavaScript] y 
+    [TypeScript], me especializo en el framework [Angular].
+`;
+
+const stackDescription = `
+    En mi camino he forjado una sólida relación con [JavaScript] 
+    y [PHP]. En los últimos [3 años] me he especializado en [Angular] Actualmente, estoy explorando el 
+    apasionante mundo de [Node.js].
+`;
+
+const workDescription = `
+    A lo largo de mi carrera, he acumulado una amplia [experiencia] en 
+    diversos proyectos y tecnologías. Cada experiencia me ha permitido 
+    desarrollar mis [habilidades] y ampliar mis [conocimientos].
+`;
+
+const buttons = [
+  { text: "Linkedin", link: "https://www.linkedin.com/in/jordi-vidal-rosello/" },
+  { text: "Github", link: "https://github.com/JordiiVidal" },
+  { text: "Currículum", link: "/documents/resume.pdf" },
+];
+
+const filteredTechnologies = (category: Category) =>
+  tecnologiesData.filter((tech) => tech.isStack && tech.category === category);
+
+const formatDates = (work: WorkExperience) => {
+  if (work.current) return `${work.startDate} - Activo`;
+  if (work.endDate === work.startDate || !work.endDate) return work.startDate;
+  return `${work.startDate} - ${work.endDate}`;
+};
+
+const techById = new Map(tecnologiesData.map((tech) => [tech.id, tech]));
 ---
 
-<Layout>
-	<Welcome />
+<Layout title="Jordi Vidal Roselló | Portfolio" description="Portfolio estático en Astro de Jordi Vidal Roselló">
+  <main class="mx-auto max-w-3xl space-y-16 px-6 pb-16 pt-6 md:space-y-20 md:px-2">
+    <Section id="about" title="Jordi Vidal Roselló" subtitle="Full-Stack Developer" description={aboutDescription}>
+      <div class="flex flex-col gap-3 md:flex-row md:justify-center">
+        {buttons.map((btn) => (
+          <ButtonLink text={btn.text} link={btn.link} />
+        ))}
+      </div>
+    </Section>
+
+    <Section id="stack" title="Stack" description={stackDescription}>
+      <div class="space-y-6">
+        {[
+          { label: "Frontend", category: Category.FRONTEND },
+          { label: "Backend", category: Category.BACKEND },
+          { label: "Tools", category: Category.TOOLS },
+        ].map((group) => (
+          <div class="space-y-3">
+            <span class="text-sm font-semibold text-slate-200">{group.label}</span>
+            <div class="grid grid-cols-2 gap-3 md:grid-cols-4">
+              {filteredTechnologies(group.category).map((tecnology) => (
+                <Card>
+                  <article class="flex flex-col items-center gap-4 p-5 text-center">
+                    <img
+                      alt={tecnology.name}
+                      src={`/icons/${tecnology.icon}`}
+                      width="42"
+                      height="42"
+                      loading="lazy"
+                    />
+                    <p class="text-xs font-medium text-slate-200">{tecnology.name}</p>
+                  </article>
+                </Card>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    </Section>
+
+    <Section id="work" title="Work Experience" description={workDescription}>
+      <ol class="space-y-10 border-l border-slate-800 pl-4">
+        {workExperiencesData
+          .slice()
+          .sort((a, b) => b.id - a.id)
+          .map((work) => (
+            <li class="space-y-3">
+              <div class="flex items-center gap-3">
+                <div class="h-2 w-2 rounded-full bg-slate-200"></div>
+                <h4 class="text-lg font-semibold text-white">{work.company}</h4>
+              </div>
+              <div class="pl-5 text-xs text-slate-300">
+                {work.title}, {formatDates(work)}
+              </div>
+              <div class="pl-5 text-sm leading-relaxed text-slate-300">
+                <TextWithLinks text={(work.description ?? "Descripción pendiente").trim()} />
+              </div>
+              <div class="pl-5 flex flex-wrap gap-2">
+                {work.tecnologies
+                  .map((id) => techById.get(id))
+                  .filter(Boolean)
+                  .map((tech) => (
+                    <Chip icon={(tech as Tecnology).icon} name={(tech as Tecnology).name} color={(tech as Tecnology).color} />
+                  ))}
+              </div>
+            </li>
+          ))}
+      </ol>
+    </Section>
+  </main>
 </Layout>

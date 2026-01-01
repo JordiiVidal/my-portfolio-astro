@@ -1,0 +1,23 @@
+---
+interface Props {
+  text: string;
+  icon?: string;
+}
+
+const { text, icon } = Astro.props as Props;
+---
+
+<span class="not-prose inline-flex items-center gap-2 rounded border border-white/10 bg-white/5 px-2 py-0.5 text-xs font-medium leading-5 text-slate-100">
+  {icon && (
+    <img
+      src={`/icons/${icon}`}
+      alt={`${text} icon`}
+      width="16"
+      height="16"
+      loading="lazy"
+      class="rounded-full"
+    />
+  )}
+  {text}
+</span>
+

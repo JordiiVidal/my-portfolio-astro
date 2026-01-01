@@ -1,0 +1,24 @@
+---
+interface Props {
+  icon: string;
+  name: string;
+  color: string;
+}
+
+const { icon, name, color } = Astro.props as Props;
+const opacityHex = "36";
+const backgroundColor = `${color}${opacityHex}`;
+---
+
+<span class="chip" style={{ backgroundColor }}>
+  <img
+    src={`/icons/${icon}`}
+    alt={`${name} icon`}
+    width="16"
+    height="16"
+    loading="lazy"
+    class="rounded-full"
+  />
+  {name}
+</span>
+

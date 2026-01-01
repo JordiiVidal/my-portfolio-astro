@@ -1,0 +1,28 @@
+---
+import TextWithLinks from "./ui/TextWithLinks.astro";
+
+interface Props {
+  id: string;
+  title: string;
+  subtitle?: string;
+  description: string;
+}
+
+const { id, title, subtitle, description } = Astro.props as Props;
+---
+
+<section id={id} class="section">
+  <div class="flex flex-col gap-2 text-center">
+    <h1 class="section-title">{title}</h1>
+    {subtitle && <h2 class="section-subtitle">{subtitle}</h2>}
+  </div>
+
+  <p class="section-text">
+    <TextWithLinks text={description} />
+  </p>
+
+  <div class="flex flex-col gap-6">
+    <slot />
+  </div>
+</section>
+
